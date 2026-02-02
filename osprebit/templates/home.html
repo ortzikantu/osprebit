@@ -1,0 +1,11 @@
+{% extends "default/baseof.html" %}
+{% block title %}ss - {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1>👋 Hello, {{ site_name }}!!!</h1>
+<div class="config-item">✅ 服务端口：{{ port }}</div>
+<div class="config-item">📂 仓库存储路径：{{ repo_path }}</div>
+<p>基于 Litestar + Jinja2 + pygit2 的 Git 自托管服务器实验页</p>
+<span>Osprebit v{{ version }}</sapn>
+<a href="/repos">前往仓库列表</a>
+{% endblock %}

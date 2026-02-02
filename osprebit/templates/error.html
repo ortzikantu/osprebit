@@ -1,0 +1,42 @@
+{% extends "default/baseof.html" %}
+{% block title %}错误 - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="error-container">
+        <div class="error-icon">
+            {% if error_code == 404 %}
+                🔍
+            {% elif error_code == 500 %}
+                ⚠️
+            {% else %}
+                ❌
+            {% endif %}
+        </div>
+        
+        <h1 class="error-title">
+            {{ error_code if error_code else "错误" }}
+        </h1>
+        
+        <div class="error-message">
+            {{ error_message if error_message else "发生了未知错误" }}
+        </div>
+        
+        {% if error_details %}
+        <div class="error-details">
+            <h3>详细信息：</h3>
+            <pre>{{ error_details }}</pre>
+        </div>
+        {% endif %}
+        
+        <div class="error-actions">
+            <a href="/" class="btn btn-primary">
+                返回首页
+            </a>
+            <a href="javascript:history.back()" class="btn btn-default">
+                返回上一页
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,5 @@
+[osprebit]
+site_name = "Osprebit"
+port = 6789
+repo_path = "/data/repos"
+base_url = "https://example.com"

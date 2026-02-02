@@ -1,0 +1,93 @@
+{% extends "default/baseof.html" %}
+{% block title %}{{ file_name }} - {{ repo_name }} - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- 头部信息 -->
+    <div class="blob-header">
+        <div class="blob-header-content">
+            <h2>{{ file_name }}</h2>
+            <div class="blob-header-actions">
+                <!-- 分支切换下拉菜单 -->
+                {% if branches %}
+                <div class="branch-selector">
+                    <select onchange="window.location.href = this.value">
+                        {% for b in branches %}
+                        <option value="{{ ('/' + repo_name + '/blob/' + b.name + '/' + file_path) | replace('//', '/') }}" {% if b.name == branch %}selected{% endif %}>{{ b.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                <!-- 标签切换下拉菜单 -->
+                {% if tags %}
+                <div class="tag-selector">
+                    <select onchange="window.location.href = this.value">
+                        <option value="" {% if branch not in tags %}selected{% endif %}>选择标签</option>
+                        {% for t in tags %}
+                        <option value="{{ ('/' + repo_name + '/blob/' + t + '/' + file_path) | replace('//', '/') }}" {% if t == branch %}selected{% endif %}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                <a href="{{ parent_url }}" class="btn btn-sm btn-default">
+                    返回上级目录
+                </a>
+            </div>
+        </div>
+        <div class="blob-meta">
+            <span>仓库：{{ repo_name }}</span>
+            <span>分支：{{ branch }}</span>
+            <span>路径：{{ file_path }}</span>
+        </div>
+    </div>
+
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs">
+        {% if breadcrumbs %}
+            {% for item in breadcrumbs %}
+                {% if item.url %}
+                    <a href="{{ item.url }}">{{ item.name }}</a>
+                {% else %}
+                    <span>{{ item.name }}</span>
+                {% endif %}
+                {% if not loop.last %} / {% endif %}
+            {% endfor %}
+        {% else %}
+            <a href="/{{ repo_name }}">{{ repo_name }}</a> / 
+            <a href="/{{ repo_name }}/tree/{{ branch }}">{{ branch }}</a> / 
+            {% set path_parts = file_path.split("/") %}
+            {% for part in path_parts[:-1] %}
+                <a href="/{{ repo_name }}/tree/{{ branch }}/{{ path_parts[:loop.index]|join('/') }}">{{ part }}</a> / 
+            {% endfor %}
+            <span>{{ file_name }}</span>
+        {% endif %}
+    </div>
+
+    <!-- 错误提示 -->
+    {% if error %}
+    <div class="error-box">
+        ❌ {{ error }}
+    </div>
+    {% else %}
+    <!-- 文件内容容器 -->
+    <div class="content-container">
+        <div class="content-header">
+            {{ "📦 二进制文件" if is_binary else "📝 文件内容" }}
+            {% if not is_binary and file_size is not none %}
+            <span>({{ file_size }} 字节)</span>
+            {% endif %}
+        </div>
+        {% if is_binary %}
+        <div class="binary-note">
+            {{ file_content }}
+        </div>
+        {% else %}
+        <!-- 文件内容带行号 -->
+        <div class="file-content">
+            <table class="code-table"><tbody>{% for line in lines %}<tr><td class="lines-num"><span id="L{{ loop.index }}" data-line-number="{{ loop.index }}">{{ loop.index }}</span></td><td rel="L{{ loop.index }}" class="lines-code"><code class="code-inner">{{ line }}</code></td></tr>{% endfor %}</tbody></table>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

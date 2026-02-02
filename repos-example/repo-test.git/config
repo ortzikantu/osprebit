@@ -1,0 +1,7 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+[repo]
+	description = 我的项目描述
+	owner = Your Name

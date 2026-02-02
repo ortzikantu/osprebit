@@ -1,0 +1,166 @@
+{% extends "default/baseof.html" %}
+{% block title %}提交历史 - {{ repo_name }} - {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- 头部信息 -->
+    <div class="commits-header">
+        <div class="commits-header-content">
+            <h2>提交历史</h2>
+            <div class="commits-header-actions">
+                <!-- 分支切换下拉菜单 -->
+                {% if branches %}
+                <div class="branch-selector">
+                    <select onchange="window.location.href = this.value">
+                        {% for b in branches %}
+                        <option value="/{{ repo_name }}/commits/{{ b.name }}" {% if b.name == branch %}selected{% endif %}>{{ b.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                <!-- 标签切换下拉菜单 -->
+                {% if tags %}
+                <div class="tag-selector">
+                    <select onchange="window.location.href = this.value">
+                        <option value="" {% if branch not in tags %}selected{% endif %}>选择标签</option>
+                        {% for t in tags %}
+                        <option value="/{{ repo_name }}/commits/{{ t }}" {% if t == branch %}selected{% endif %}>{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+                <a href="/{{ repo_name }}/tree/{{ branch }}" class="btn btn-sm btn-default">
+                    返回仓库
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提交历史列表 -->
+    {% if commits %}
+    <div class="commits-list">
+        {% for commit in commits %}
+        <div class="commit-item">
+            <div class="commit-item-content">
+                <div class="commit-item-info">
+                    <h3 class="commit-item-message">
+                        <a href="/{{ repo_name }}/commit/{{ branch }}/{{ commit.short_id }}">{{ commit.message }}</a>
+                    </h3>
+                    <div class="commit-item-meta">
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                            {{ commit.author }}
+                        </span>
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                            </svg>
+                            {{ commit.time.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </span>
+                    </div>
+                </div>
+                <span class="commit-sha">
+                    {{ commit.short_id }}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- 分页控件 -->
+    <div class="pagination">
+        <!-- 首页按钮 -->
+        {% if page > 1 %}
+        <a href="/{{ repo_name }}/commits/{{ branch }}?page=1">
+            首页
+        </a>
+        {% else %}
+        <span class="disabled">
+            首页
+        </span>
+        {% endif %}
+        
+        <span>|</span>
+        
+        <!-- 上一页按钮 -->
+        {% if has_prev %}
+        <a href="/{{ repo_name }}/commits/{{ branch }}?page={{ prev_page }}">
+            上一页
+        </a>
+        {% else %}
+        <span class="disabled">
+            上一页
+        </span>
+        {% endif %}
+        
+        <!-- 页码按钮 -->
+        {% set start_page = 1 if page - 2 < 1 else page - 2 %}
+        {% set end_page = total_pages if start_page + 4 > total_pages else start_page + 4 %}
+        
+        <!-- 调整结束页码，确保显示5个页码 -->
+        {% if end_page - start_page < 4 and start_page > 1 %}
+            {% set start_page = 1 if end_page - 4 < 1 else end_page - 4 %}
+        {% endif %}
+        
+        <!-- 显示页码 -->
+        {% for i in range(start_page, end_page + 1) %}
+            {% if i == page %}
+                <a href="/{{ repo_name }}/commits/{{ branch }}?page={{ i }}" class="active">
+                    {{ i }}
+                </a>
+            {% else %}
+                <a href="/{{ repo_name }}/commits/{{ branch }}?page={{ i }}">
+                    {{ i }}
+                </a>
+            {% endif %}
+        {% endfor %}
+        
+        <!-- 省略号 -->
+        {% if end_page < total_pages %}
+            <span class="ellipsis">
+                ...
+            </span>
+        {% endif %}
+        
+        <!-- 下一页按钮 -->
+        {% if has_next %}
+        <a href="/{{ repo_name }}/commits/{{ branch }}?page={{ next_page }}">
+            下一页
+        </a>
+        {% else %}
+        <span class="disabled">
+            下一页
+        </span>
+        {% endif %}
+        
+        <span>|</span>
+        
+        <!-- 末页按钮 -->
+        {% if page < total_pages %}
+        <a href="/{{ repo_name }}/commits/{{ branch }}?page={{ total_pages }}">
+            末页
+        </a>
+        {% else %}
+        <span class="disabled">
+            末页
+        </span>
+        {% endif %}
+        
+        <!-- 总页数信息 -->
+        <span class="total-pages">
+            总页数: {{ total_pages }}
+        </span>
+    </div>
+    {% else %}
+    <div class="empty-commits">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        <h3>暂无提交历史</h3>
+        <p>该分支还没有任何提交记录</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
