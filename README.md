@@ -44,7 +44,7 @@ Osprebit 是一个轻量级的自托管 Git Web 界面，基于现代 Python 技
 ## 快速开始
 
 ### 安装
-
+强烈建议在 Linux 系统中运行，确保已安装 `git`
 ```bash
 # 克隆仓库
 git clone https://codeberg.org/ortzikantu/osprebit.git
@@ -52,18 +52,14 @@ cd osprebit
 
 # 创建虚拟环境
 python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# 或
-.venv\Scripts\activate  # Windows
+source .venv/bin/activate
 
 # 安装依赖
 pip install -r requirements.txt
 ```
 
 ### 配置
-
-创建配置文件 `~/.config/osprebit/config.toml`：
-
+创建配置文件 ~/.config/osprebit/config.toml：
 ```toml
 [osprebit]
 site_name = "Osprebit"
@@ -71,11 +67,12 @@ port = 6789
 repo_path = "/path/to/your/repos"
 base_url = "https://your-domain.com"
 ```
-
-配置文件示例可参考 [config.toml.example](config.toml.example)。
+- `site_name` 设定站点名
+- `port` 设定端口
+- `repo_path` 设定裸仓库存放的位置，比如在家目录下创建repos文件夹，则可写 /home/git/repos
+- `base_url` 设定域名，如果要部署到云服务器开放浏览的话
 
 ### 运行
-
 ```bash
 # 开发模式
 python -m uvicorn osprebit.app:app --host 0.0.0.0 --port 6789 --reload
@@ -83,13 +80,10 @@ python -m uvicorn osprebit.app:app --host 0.0.0.0 --port 6789 --reload
 # 生产模式
 python -m uvicorn osprebit.app:app --host 0.0.0.0 --port 6789 --workers 4
 ```
-
-访问 `http://localhost:6789` 即可查看界面。
+访问 http://localhost:6789 即可查看界面。
 
 ### 创建裸仓库
-
 Osprebit 需要使用 Git 裸仓库（bare repository）。创建裸仓库的步骤：
-
 ```bash
 # 创建裸仓库目录
 mkdir -p /path/to/your/repos/myproject.git
@@ -104,6 +98,38 @@ git config --local repo.description "我的项目描述"
 
 # 设置仓库所有者（可选）
 git config --local repo.owner "Your Name"
+```
+### 配置令牌
+服务运行起来后即可随意 Clone、Pull 仓库了，但 Push 需要进一步设置：
+```bash
+python get_token.py
+```
+这步命令用于生成一个具有三天有效期的Token，可以充当上传代码时的密码，下面是 Token 生成成功的反馈信息：
+```bash
+已加载配置文件: /home/git/.config/osprebit/config.toml
+==================================================
+Git 仓库认证令牌获取工具
+==================================================
+
+✅ 令牌已生成
+
+令牌: hiedRKwnav64VnV7Iwiqs6MiCkO8CIrcTS6ca47Jilw
+
+令牌信息:
+  用户名: git
+  创建时间: 2026-02-03 18:20:21
+  过期时间: 2026-02-06 18:20:21
+  有效期: 3 天
+
+==================================================
+注意事项:
+==================================================
+• 令牌有效期为 3 天
+• 请妥善保管令牌，不要泄露给他人
+• 令牌过期后需要重新获取
+• 系统仅支持令牌认证，不再支持密码认证
+• 如果遇到问题，请联系管理员
+==================================================
 ```
 
 ## 许可证
