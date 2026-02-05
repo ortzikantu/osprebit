@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="https://ortzikantu.com/assets/pics/works-icon/works-osprebit.png" alt="Osprebit" width="120" height="120">
+<img src="https://ortzikantu.com/assets/pics/works-icon/cover-osprebit.png" alt="Osprebit" width="250" height="180" style="border-radius:10px">
 
 ![Osprebit](https://img.shields.io/badge/Osprebit-v0.1.0--dev-pink)
 ![License](https://img.shields.io/badge/License-GPL--3.0--only-blue)
